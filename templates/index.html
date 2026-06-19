@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>BigQuery Release Notes — Live Feed</title>
+  <meta name="description" content="Browse the latest Google BigQuery release notes, filter by type, and share updates directly to X (Twitter) with one click." />
+  <meta name="robots" content="noindex" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="BigQuery Release Notes Viewer" />
+  <meta property="og:description" content="Stay up-to-date with every BigQuery feature, announcement, and fix." />
+  <meta property="og:type"        content="website" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+  <!-- Favicon: BQ initials via SVG data URI -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234f8ef7'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Inter,sans-serif' font-weight='700' font-size='13' fill='white'%3EBQ%3C/text%3E%3C/svg%3E" />
+</head>
+
+<body>
+
+  <!-- ══ Header ════════════════════════════════════════════════ -->
+  <header>
+    <div class="header-inner">
+
+      <a class="brand" href="/" title="BigQuery Release Notes">
+        <div class="brand-logo" aria-hidden="true">📊</div>
+        <div>
+          <div class="brand-title">BigQuery Release Notes</div>
+          <div class="brand-sub">Live Google Cloud Feed</div>
+        </div>
+      </a>
+
+      <div class="header-meta">
+        <span id="last-updated" aria-live="polite"></span>
+        <button id="refresh-btn" aria-label="Refresh release notes">
+          <div class="spinner-icon" role="status" aria-label="Loading…"></div>
+          <span class="btn-icon">↻</span>
+          Refresh
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ══ Main content ══════════════════════════════════════════ -->
+  <main>
+
+    <!-- Summary pills -->
+    <div id="summary-bar" aria-label="Feed summary" style="opacity:0">
+      <div class="summary-pill total">
+        <span>📋</span>
+        <span id="pill-total">— releases</span>
+      </div>
+      <div class="summary-pill feature">
+        <span>✨</span>
+        <span id="pill-feature">— features</span>
+      </div>
+      <div class="summary-pill ann">
+        <span>📣</span>
+        <span id="pill-ann">— announcements</span>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div id="filter-bar" role="group" aria-label="Filter by type" style="display:none">
+      <button class="filter-btn active"  data-filter="all"          id="filter-all">All</button>
+      <button class="filter-btn"         data-filter="feature"      id="filter-feature">✨ Features</button>
+      <button class="filter-btn"         data-filter="announcement" id="filter-announcement">📣 Announcements</button>
+      <button class="filter-btn"         data-filter="issue"        id="filter-issue">🐛 Issues / Fixes</button>
+      <button class="filter-btn"         data-filter="deprecation"  id="filter-deprecation">⚠️ Deprecations</button>
+      <button class="filter-btn"         data-filter="changed"      id="filter-changed">🔄 Changed</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-state" role="status" aria-live="polite">
+      <div class="big-spinner"></div>
+      <div class="state-title">Fetching release notes…</div>
+      <div class="state-desc">Pulling the latest updates from Google Cloud.</div>
+    </div>
+
+    <!-- Error -->
+    <div id="error-state" role="alert" aria-live="assertive">
+      <div style="font-size:2.5rem">⚠️</div>
+      <div class="state-title">Could not load release notes</div>
+      <div id="error-msg" class="error-msg"></div>
+      <div class="state-desc">Check your internet connection and try refreshing.</div>
+    </div>
+
+    <!-- Empty result after filter -->
+    <div id="empty-state">
+      <div style="font-size:2.5rem">🔍</div>
+      <div class="state-title">No entries match this filter</div>
+      <div class="state-desc">Try selecting a different category above.</div>
+    </div>
+
+    <!-- Cards -->
+    <div id="entries-grid" aria-label="Release note entries" role="feed"></div>
+
+  </main>
+
+  <!-- ══ Tweet Modal ════════════════════════════════════════════ -->
+  <div id="tweet-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="tweet-modal">
+
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">
+          <div class="x-icon" aria-hidden="true">𝕏</div>
+          Share on X (Twitter)
+        </div>
+        <button class="modal-close" id="modal-close" aria-label="Close modal">✕</button>
+      </div>
+
+      <!-- Source snippet preview -->
+      <div class="modal-source-card">
+        <div class="modal-source-date" id="modal-source-date"></div>
+        <div class="modal-source-snippet" id="modal-source-snippet"></div>
+      </div>
+
+      <!-- Editable tweet text -->
+      <label for="tweet-textarea" style="display:none">Tweet text</label>
+      <textarea id="tweet-textarea" spellcheck="true" placeholder="Compose your tweet…"></textarea>
+
+      <div class="tweet-char-counter">
+        <span class="char-count" id="char-count">280</span>&nbsp;characters remaining
+      </div>
+
+      <div class="tweet-actions">
+        <p class="tweet-hint">
+          Clicking <strong>Post on X</strong> opens Twitter's<br>
+          compose window in a new tab.
+        </p>
+        <button id="post-tweet-btn" aria-label="Post tweet on X">
+          𝕏&nbsp; Post on X
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
